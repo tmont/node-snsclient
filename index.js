@@ -124,12 +124,6 @@ function buildSignatureString(message) {
 
 module.exports = function awsSnsMiddleware(opts) {
     opts = opts || {};
-    if (typeof(opts.messageHandler) !== 'function') {
-        opts.messageHandler = function(req, res, message) {
-            req.snsMessage = message;
-        };
-    }
-
     return function(req, res, next) {
         var body = '';
         req.on('data', function(chunk) {
