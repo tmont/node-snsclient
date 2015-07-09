@@ -1,79 +1,35 @@
-# Amazon AWS SNS (Simple Notification Service) http(s) endpoint
-## **Important API Change from v0.1 to v0.2**
-The main `SNSClient` callback now returns the more accepted Node.js method of `function(err, msg)`. v0.1 sent both the error and message as a single argument.
+# AWS SNS Express middleware
+This has been adapted from https://github.com/mattrobenolt/node-snsclient
+to better support express. If you just want a standalone client without
+express you're better off using that one.
 
 ## Installation
 ```
-$ npm install aws-snsclient
+$ npm install express-aws-sns
 ```
 
-## Basic Usage
+## Usage
 ```javascript
-var http = require('http')
-  , SNSClient = require('aws-snsclient');
+var express = require('express'),
+    sns = require('express-aws-sns'),
+    app = express();
 
-var client = SNSClient(function(err, message) {
-    console.log(message);
-});
-
-http.createServer(function(req, res) {
-    if(req.method === 'POST' && req.url === '/receive') {
-        return client(req, res);
-    }
-    res.writeHead(404);
-    res.end('Not found.');
-}).listen(9000);
+app.use(sns());
 ```
-Your client only needs to accept one callback, which accepts an object of the decoded message sent from the SNS topic.
 
-`message` is the raw JSON. You'll probably want access to: `message.Message` to get the actual message that you sent.
-
-## Confirmation Requests
-
-The initial confirmation request sent out by Amazon is automatically confirmed at the same endpoint. No additional effort needed.
-
-## Request Verification
-
-Signatures are automatically verified, but we can optionally verify the correct account id, region, and topics.
-
-### Ignore signature verification (recommended for debugging only)
+Perform no verification (not recommended except for debugging):
 ```javascript
-var auth = {
+app.use(sns({
     verify: false
-};
-var client = SNSClient(auth, function(err, message) {
-    console.log(message);
-});
+}));
 ```
 
-### Verify all credentials
+Ensure topic:
 ```javascript
-var auth = {
-    region: 'us-east-1'
-  , account: 'xxx'
-  , topic: 'xxx'
-};
-var client = SNSClient(auth, function(err, message) {
-    console.log(message);
-});
+app.use(sns({
+    topic: 'aws:sns:arn:xxx:yyy:zzz'
+}));
 ```
 
-## Use with Express
-```javascript
-var express = require('express')
-  , app = express.createServer()
-  , SNSClient = require('aws-snsclient');
-
-var auth = {
-    region: 'us-east-1'
-  , account: 'xxx'
-  , topic: 'xxx'
-}
-var client = SNSClient(auth, function(err, message) {
-    console.log(message);
-});
-
-app.post('/receive', client);
-
-app.listen(9000);
-```
+By default, the message will be attached to the request in the `snsMessage`
+property. It can be accessed via `req.snsMessage`.
