@@ -31,7 +31,7 @@ function validateRequest(options, message, callback) {
         arn = message.TopicArn.split(':'),
         region = arn[3];
 
-    if (options.topic !== message.TopicArn) {
+    if (options.topic && options.topic !== message.TopicArn) {
         callback(new Error('Topic ARN does not match, expected ' + options.topic + ' got ' + message.TopicArn));
         return;
     }
