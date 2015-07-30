@@ -7,10 +7,11 @@
         "sns",
         "express"
     ],
-    "version": "0.3.0",
+    "version": "0.4.0",
     "repository": "https://github.com/tmont/node-snsclient.git",
     "author": "Matt Robenolt <matt@ydekproductions.com> (http://mattrobenolt.com)",
     "contributors": [
-        "Tommy Montgomery <tmont@tmont.com> (http://tmont.com/)"
+        "Tommy Montgomery <tmont@tmont.com> (http://tmont.com/)",
+        "Adam Babcock"
     ]
 }
